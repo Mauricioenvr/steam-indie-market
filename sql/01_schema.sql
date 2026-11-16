@@ -150,6 +150,32 @@ CREATE TABLE IF NOT EXISTS core.fact_game_snapshot (
     PRIMARY KEY (app_id, source, snapshot_date)
 );
 
+-- Columnas añadidas después de la primera versión (seguro en bases ya creadas)
+ALTER TABLE core.dim_game           ADD COLUMN IF NOT EXISTS dlc_count         INTEGER;
+ALTER TABLE core.dim_game           ADD COLUMN IF NOT EXISTS n_audio_languages SMALLINT;
+ALTER TABLE core.fact_game_snapshot ADD COLUMN IF NOT EXISTS discount_pct      SMALLINT;
+ALTER TABLE core.fact_game_snapshot ADD COLUMN IF NOT EXISTS list_price_usd    NUMERIC(8,2);
+ALTER TABLE core.dim_game           ADD COLUMN IF NOT EXISTS is_software       BOOLEAN;
+
+-- Reconstruye el precio de lista a partir del precio con descuento.
+-- Dividir produce valores como 9.98; si el resultado está a 3 centavos o
+-- menos de un precio terminado en .99, se ajusta a ese valor (9.98 -> 9.99).
+CREATE OR REPLACE FUNCTION core.list_price(price NUMERIC, discount NUMERIC)
+RETURNS NUMERIC
+LANGUAGE sql IMMUTABLE AS $$
+    SELECT CASE
+        WHEN price IS NULL THEN NULL
+        WHEN COALESCE(discount, 0) = 0 THEN price
+        WHEN discount >= 100 THEN NULL                 -- 100 % de descuento: no recuperable
+        ELSE (
+            SELECT CASE WHEN ceil(raw) - 0.01 - raw BETWEEN 0 AND 0.03
+                        THEN ceil(raw) - 0.01
+                        ELSE round(raw, 2) END
+            FROM (SELECT price / (1 - discount / 100.0) AS raw) r
+        )
+    END;
+$$;
+
 CREATE INDEX IF NOT EXISTS ix_fact_snapshot_date ON core.fact_game_snapshot (snapshot_date);
 CREATE INDEX IF NOT EXISTS ix_game_release_key  ON core.dim_game (release_date_key);
 CREATE INDEX IF NOT EXISTS ix_bridge_tag_tag    ON core.bridge_game_tag (tag_id);

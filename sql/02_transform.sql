@@ -68,14 +68,22 @@ $$;
 -- ---------------------------------------------------------------------
 -- 2. dim_game
 -- ---------------------------------------------------------------------
-INSERT INTO core.dim_game
+INSERT INTO core.dim_game (
+    app_id, name, release_date, release_date_raw, release_date_key, coming_soon,
+    is_free, required_age, windows, mac, linux, n_languages, achievements,
+    n_screenshots, n_movies, has_website, is_indie_genre, is_indie_tag,
+    is_early_access, dlc_count, n_audio_languages)
 SELECT l.app_id,
        NULLIF(btrim(p->>'name'), ''),
        core.parse_steam_date(pg_temp.release_text(p)),
        pg_temp.release_text(p),
        NULL,                                          -- release_date_key (se llena abajo)
        (p->'release_date'->>'coming_soon')::boolean,      -- NULL si el formato es texto
-       (p->>'is_free')::boolean,
+       -- Las versiones recientes del dataset ya no traen is_free: se deriva del
+       -- precio, sin contar juegos con 100 % de descuento temporal
+       COALESCE((p->>'is_free')::boolean,
+                (p->>'price')::numeric = 0
+                AND COALESCE(NULLIF(regexp_replace(p->>'discount', '[^0-9.]', '', 'g'), '')::numeric, 0) < 100),
        (p->>'required_age')::numeric::smallint,
        (p->>'windows')::boolean,
        (p->>'mac')::boolean,
@@ -87,7 +95,9 @@ SELECT l.app_id,
        COALESCE(btrim(p->>'website'), '') <> '',
        EXISTS (SELECT 1 FROM pg_temp.json_list(p->'genres') g WHERE lower(g) = 'indie'),
        (jsonb_typeof(p->'tags') = 'object' AND p->'tags' ? 'Indie'),
-       EXISTS (SELECT 1 FROM pg_temp.json_list(p->'genres') g WHERE lower(g) = 'early access')
+       EXISTS (SELECT 1 FROM pg_temp.json_list(p->'genres') g WHERE lower(g) = 'early access'),
+       (p->>'dlc_count')::numeric::int,
+       (SELECT count(*) FROM pg_temp.json_list(p->'full_audio_languages'))::smallint
 FROM latest l;
 
 UPDATE core.dim_game
@@ -121,6 +131,25 @@ SELECT DISTINCT l.app_id, d.genre_id
 FROM latest l, pg_temp.json_list(l.p->'genres') v
 JOIN core.dim_genre d ON d.name = v;
 
+-- Software que no es un juego: tiene un género de software o multimedia,
+-- o tiene 'Education' sin ningún género de juego (para conservar los juegos educativos).
+UPDATE core.dim_game g
+SET is_software = EXISTS (
+        SELECT 1 FROM core.bridge_game_genre b JOIN core.dim_genre ge USING (genre_id)
+        WHERE b.app_id = g.app_id
+          AND ge.name IN ('Utilities', 'Design & Illustration', 'Animation & Modeling',
+                          'Video Production', 'Game Development', 'Audio Production',
+                          'Software Training', 'Photo Editing', 'Web Publishing',
+                          'Accounting', 'Movie', '360 Video', 'Tutorial', 'Documentary', 'Short'))
+    OR (EXISTS (
+            SELECT 1 FROM core.bridge_game_genre b JOIN core.dim_genre ge USING (genre_id)
+            WHERE b.app_id = g.app_id AND ge.name = 'Education')
+        AND NOT EXISTS (
+            SELECT 1 FROM core.bridge_game_genre b JOIN core.dim_genre ge USING (genre_id)
+            WHERE b.app_id = g.app_id
+              AND ge.name IN ('Action', 'Adventure', 'Casual', 'RPG', 'Simulation', 'Strategy',
+                              'Sports', 'Racing', 'Massively Multiplayer')));
+
 -- Categorías (Single-player, Steam Achievements, ...)
 INSERT INTO core.dim_category (name)
 SELECT DISTINCT v FROM latest, pg_temp.json_list(p->'categories') v;
@@ -152,7 +181,7 @@ JOIN core.dim_tag d ON d.name = t.name;
 INSERT INTO core.fact_game_snapshot (
     app_id, source, snapshot_date, price_usd, positive, negative,
     owners_low, owners_high, peak_ccu, recommendations, metacritic_score,
-    avg_playtime_forever_min, median_playtime_forever_min)
+    avg_playtime_forever_min, median_playtime_forever_min, discount_pct, list_price_usd)
 SELECT r.app_id, r.source, r.snapshot_date,
        (r.payload->>'price')::numeric,
        (r.payload->>'positive')::numeric::int,
@@ -163,20 +192,32 @@ SELECT r.app_id, r.source, r.snapshot_date,
        (r.payload->>'recommendations')::numeric::int,
        NULLIF((r.payload->>'metacritic_score')::numeric::int, 0)::smallint,   -- 0 = sin dato
        (r.payload->>'average_playtime_forever')::numeric::int,
-       (r.payload->>'median_playtime_forever')::numeric::int
-FROM staging.games_raw r;
+       (r.payload->>'median_playtime_forever')::numeric::int,
+       -- 'discount' llega como número, texto o nulo: se extraen solo los dígitos
+       d.discount::smallint,
+       core.list_price((r.payload->>'price')::numeric, d.discount)
+FROM staging.games_raw r
+CROSS JOIN LATERAL (
+    SELECT NULLIF(regexp_replace(r.payload->>'discount', '[^0-9.]', '', 'g'), '')::numeric AS discount
+) d;
 
 COMMIT;
 
 -- ---------------------------------------------------------------------
--- 5. Vista de trabajo: juego + métricas del snapshot más reciente
+-- 5. Vistas de trabajo
 -- ---------------------------------------------------------------------
-CREATE OR REPLACE VIEW core.v_game_latest AS
+DROP VIEW IF EXISTS core.v_game_latest;
+DROP VIEW IF EXISTS core.v_game_all;
+
+-- Todos los juegos (incluye lanzamientos futuros) con su snapshot más reciente
+CREATE VIEW core.v_game_all AS
 SELECT g.*,
-       f.source, f.snapshot_date, f.price_usd, f.positive, f.negative,
-       f.total_reviews, f.pct_positive, f.owners_low, f.owners_high,
-       f.peak_ccu, f.recommendations, f.metacritic_score,
-       f.avg_playtime_forever_min, f.median_playtime_forever_min
+       (g.is_indie_genre OR g.is_indie_tag)              AS is_indie,
+       (g.release_date <= f.snapshot_date)               AS is_released,
+       f.source, f.snapshot_date, f.price_usd, f.discount_pct, f.list_price_usd,
+       f.positive, f.negative, f.total_reviews, f.pct_positive,
+       f.owners_low, f.owners_high, f.peak_ccu, f.recommendations,
+       f.metacritic_score, f.avg_playtime_forever_min, f.median_playtime_forever_min
 FROM core.dim_game g
 JOIN LATERAL (
     SELECT * FROM core.fact_game_snapshot fs
@@ -184,3 +225,8 @@ JOIN LATERAL (
     ORDER BY fs.snapshot_date DESC
     LIMIT 1
 ) f ON TRUE;
+
+-- Vista principal del análisis: solo juegos (no software) ya publicados
+-- a la fecha del snapshot
+CREATE VIEW core.v_game_latest AS
+SELECT * FROM core.v_game_all WHERE is_released AND NOT is_software;

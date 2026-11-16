@@ -58,7 +58,6 @@
     "name": "Free Brawler",
     "release_date": "3 Mar, 2021",
     "required_age": 18,
-    "is_free": true,
     "price": 0,
     "supported_languages": "English, French, German",
     "website": "",
@@ -94,7 +93,13 @@
       "Free to Play": 500,
       "Action": 400,
       "Indie": 12
-    }
+    },
+    "discount": "25",
+    "dlc_count": 3,
+    "full_audio_languages": [
+      "English",
+      "French"
+    ]
   },
   "900000003": {
     "name": "Unreleased Thing",
@@ -170,5 +175,220 @@
     "tags": {
       "Casual": 5
     }
+  },
+  "900000005": {
+    "name": "Future Release",
+    "release_date": "Dec 1, 2026",
+    "required_age": 0,
+    "price": 0,
+    "supported_languages": [
+      "English",
+      "Spanish - Latin America"
+    ],
+    "website": "https://example.com",
+    "windows": true,
+    "mac": true,
+    "linux": false,
+    "metacritic_score": 0,
+    "achievements": 24,
+    "recommendations": 1200,
+    "developers": [
+      "Small Studio"
+    ],
+    "publishers": [
+      "Small Studio"
+    ],
+    "categories": [
+      "Single-player",
+      "Steam Achievements"
+    ],
+    "genres": [
+      "Adventure",
+      "Indie"
+    ],
+    "screenshots": [
+      "a",
+      "b",
+      "c"
+    ],
+    "movies": [
+      "m"
+    ],
+    "positive": 1900,
+    "negative": 100,
+    "estimated_owners": "50000 - 100000",
+    "average_playtime_forever": 320,
+    "median_playtime_forever": 280,
+    "peak_ccu": 35,
+    "tags": [],
+    "discount": null,
+    "dlc_count": 0,
+    "full_audio_languages": []
+  },
+  "900000006": {
+    "name": "Wallpaper Tool",
+    "release_date": {
+      "coming_soon": false,
+      "date": "Oct 21, 2019"
+    },
+    "required_age": 0,
+    "price": 1.99,
+    "supported_languages": [
+      "English",
+      "Spanish - Latin America"
+    ],
+    "website": "https://example.com",
+    "windows": true,
+    "mac": true,
+    "linux": false,
+    "metacritic_score": 0,
+    "achievements": 24,
+    "recommendations": 1200,
+    "developers": [
+      "Small Studio"
+    ],
+    "publishers": [
+      "Small Studio"
+    ],
+    "categories": [
+      "Single-player",
+      "Steam Achievements"
+    ],
+    "genres": [
+      "Casual",
+      "Indie",
+      "Utilities"
+    ],
+    "screenshots": [
+      "a",
+      "b",
+      "c"
+    ],
+    "movies": [
+      "m"
+    ],
+    "positive": 1900,
+    "negative": 100,
+    "estimated_owners": "50000 - 100000",
+    "average_playtime_forever": 320,
+    "median_playtime_forever": 280,
+    "peak_ccu": 35,
+    "tags": {
+      "Indie": 210,
+      "Adventure": 180,
+      "Atmospheric": 150,
+      "Puzzle": 90
+    },
+    "discount": 50
+  },
+  "900000007": {
+    "name": "Math Quest",
+    "release_date": {
+      "coming_soon": false,
+      "date": "Oct 21, 2019"
+    },
+    "required_age": 0,
+    "price": 8.99,
+    "supported_languages": [
+      "English",
+      "Spanish - Latin America"
+    ],
+    "website": "https://example.com",
+    "windows": true,
+    "mac": true,
+    "linux": false,
+    "metacritic_score": 0,
+    "achievements": 24,
+    "recommendations": 1200,
+    "developers": [
+      "Small Studio"
+    ],
+    "publishers": [
+      "Small Studio"
+    ],
+    "categories": [
+      "Single-player",
+      "Steam Achievements"
+    ],
+    "genres": [
+      "Education",
+      "Adventure",
+      "Indie"
+    ],
+    "screenshots": [
+      "a",
+      "b",
+      "c"
+    ],
+    "movies": [
+      "m"
+    ],
+    "positive": 1900,
+    "negative": 100,
+    "estimated_owners": "50000 - 100000",
+    "average_playtime_forever": 320,
+    "median_playtime_forever": 280,
+    "peak_ccu": 35,
+    "tags": {
+      "Indie": 210,
+      "Adventure": 180,
+      "Atmospheric": 150,
+      "Puzzle": 90
+    },
+    "discount": "40"
+  },
+  "900000008": {
+    "name": "Typing Course",
+    "release_date": {
+      "coming_soon": false,
+      "date": "Oct 21, 2019"
+    },
+    "required_age": 0,
+    "price": 0,
+    "supported_languages": [
+      "English",
+      "Spanish - Latin America"
+    ],
+    "website": "https://example.com",
+    "windows": true,
+    "mac": true,
+    "linux": false,
+    "metacritic_score": 0,
+    "achievements": 24,
+    "recommendations": 1200,
+    "developers": [
+      "Small Studio"
+    ],
+    "publishers": [
+      "Small Studio"
+    ],
+    "categories": [
+      "Single-player",
+      "Steam Achievements"
+    ],
+    "genres": [
+      "Education"
+    ],
+    "screenshots": [
+      "a",
+      "b",
+      "c"
+    ],
+    "movies": [
+      "m"
+    ],
+    "positive": 1900,
+    "negative": 100,
+    "estimated_owners": "50000 - 100000",
+    "average_playtime_forever": 320,
+    "median_playtime_forever": 280,
+    "peak_ccu": 35,
+    "tags": {
+      "Indie": 210,
+      "Adventure": 180,
+      "Atmospheric": 150,
+      "Puzzle": 90
+    },
+    "discount": 100
   }
 }

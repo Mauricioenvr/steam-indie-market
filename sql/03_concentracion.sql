@@ -1,6 +1,6 @@
 -- =====================================================================
 -- EDA 03 — Pregunta 5: ¿qué tan concentrado está el éxito?
--- Universo: juegos indie (género) lanzados antes del año en curso.
+-- Universo: juegos indie (género o tag) lanzados antes del año en curso.
 -- =====================================================================
 
 -- 3.1 Participación en el total de reseñas por grupo de juegos
@@ -8,7 +8,7 @@ WITH indies AS (
     SELECT total_reviews,
            percent_rank() OVER (ORDER BY total_reviews DESC) AS pr   -- 0 = el más reseñado
     FROM core.v_game_latest
-    WHERE is_indie_genre AND release_date < date_trunc('year', current_date)
+    WHERE is_indie AND release_date < date_trunc('year', current_date)
 )
 SELECT round(100.0 * sum(total_reviews) FILTER (WHERE pr <  0.01) / sum(total_reviews), 1) AS top_1pct,
        round(100.0 * sum(total_reviews) FILTER (WHERE pr <  0.10) / sum(total_reviews), 1) AS top_10pct,
@@ -26,7 +26,7 @@ WITH ordenado AS (
                               ORDER BY total_reviews) AS i,
            count(*)     OVER (PARTITION BY extract(year FROM release_date)) AS n
     FROM core.v_game_latest
-    WHERE is_indie_genre
+    WHERE is_indie
       AND release_date >= '2010-01-01'
       AND release_date < date_trunc('year', current_date)
 )
@@ -40,6 +40,6 @@ ORDER BY anio;
 SELECT name, extract(year FROM release_date)::int AS anio,
        total_reviews, pct_positive, price_usd
 FROM core.v_game_latest
-WHERE is_indie_genre
+WHERE is_indie
 ORDER BY total_reviews DESC
 LIMIT 20;
