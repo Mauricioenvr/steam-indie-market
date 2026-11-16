@@ -169,3 +169,27 @@ Indies 2016–2023, % que llega a 100 reseñas:
   viernes 20,7 %, sábado y domingo entre 12 % y 13 %.
 - **Posible confusión:** lanzar en fin de semana puede indicar un desarrollador sin
   publisher. La regresión incluirá una variable de autopublicado para separarlo.
+
+## 11. Hallazgo: precio y éxito (asociación, sin controles)
+
+Indies 2016–2023, precio de lista:
+
+- **Oferta:** el 51 % se lanza a menos de $5 y solo el 2,8 % a $20 o más. La
+  mediana del precio de los indies de pago se mantiene en ~$4,99 desde 2016, así que
+  en términos reales (con inflación) ha bajado. La proporción de juegos gratuitos
+  subió de 12,8 % a ~16 %.
+- **Alcance:** el % que llega a 100 reseñas sube con el precio, de 12,7 % (< $2) a
+  65,8 % ($20–29,99), y cae a 30,4 % en $30 o más. Ese tramo es bimodal: pocos
+  éxitos grandes (22,5 % llega a 1.000) y muchos juegos sin tracción.
+- **Calidad percibida:** la valoración mediana es casi plana (82–84 %) entre $2 y
+  $30 o más; solo < $2 es más baja (78,4 %). Los jugadores no castigan el precio alto
+  con peores reseñas.
+- **Índice de ingresos** (reseñas × precio): los tramos de $15 a $29,99 (8,0 % de los
+  indies de pago) concentran el 55 % del índice; los de menos de $5 (60 % de los
+  juegos), solo el 2,4 %.
+
+**Por qué no es causal:** (1) el precio refleja la ambición del juego: más
+contenido, presupuesto y a veces publisher; (2) causalidad inversa: un juego que
+no vende tiende a bajar su precio, y aquí se usa el precio actual; (3) el índice
+supone que la proporción reseñas/ventas es igual en todos los tramos y que se vende
+a precio de lista, cuando buena parte de las ventas ocurre con descuento.

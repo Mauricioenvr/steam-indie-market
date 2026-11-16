@@ -206,14 +206,26 @@ COMMIT;
 -- ---------------------------------------------------------------------
 -- 5. Vistas de trabajo
 -- ---------------------------------------------------------------------
-DROP VIEW IF EXISTS core.v_game_latest;
-DROP VIEW IF EXISTS core.v_game_all;
+-- CASCADE elimina también vistas creadas encima de estas (se recrean aquí).
+-- Las consultas de sql/eda/ no crean objetos, solo leen.
+DROP VIEW IF EXISTS core.v_game_all CASCADE;
 
 -- Todos los juegos (incluye lanzamientos futuros) con su snapshot más reciente
 CREATE VIEW core.v_game_all AS
 SELECT g.*,
        (g.is_indie_genre OR g.is_indie_tag)              AS is_indie,
        (g.release_date <= f.snapshot_date)               AS is_released,
+       CASE
+           WHEN f.list_price_usd IS NULL                   THEN NULL
+           WHEN g.is_free OR f.list_price_usd = 0          THEN '0. Gratis'
+           WHEN f.list_price_usd <  2                      THEN '1. < $2'
+           WHEN f.list_price_usd <  5                      THEN '2. $2 – 4,99'
+           WHEN f.list_price_usd < 10                      THEN '3. $5 – 9,99'
+           WHEN f.list_price_usd < 15                      THEN '4. $10 – 14,99'
+           WHEN f.list_price_usd < 20                      THEN '5. $15 – 19,99'
+           WHEN f.list_price_usd < 30                      THEN '6. $20 – 29,99'
+           ELSE                                                 '7. $30 o más'
+       END                                               AS tramo_precio,
        f.source, f.snapshot_date, f.price_usd, f.discount_pct, f.list_price_usd,
        f.positive, f.negative, f.total_reviews, f.pct_positive,
        f.owners_low, f.owners_high, f.peak_ccu, f.recommendations,
