@@ -29,7 +29,7 @@ Detalles en [`docs/decisiones_metodologicas.md`](docs/decisiones_metodologicas.m
 | Extracción | Python (ijson, requests), Steam Store API, SteamSpy |
 | Almacenamiento y modelado | PostgreSQL: staging en JSONB y modelo estrella |
 | Análisis | SQL (CTEs, funciones de ventana), pandas, statsmodels, scipy |
-| Visualización | Streamlit + Plotly |
+| Visualización | matplotlib (notebooks), Streamlit + Plotly (dashboard) |
 
 ## Modelo de datos
 
@@ -57,8 +57,9 @@ las actualizaciones de la API conviven y permiten ver la evolución en el tiempo
 ├── data/           # raw/ y processed/ (no se versionan)
 ├── docs/           # Decisiones metodológicas
 ├── notebooks/      # Exploración y modelos
-├── sql/            # Esquema y transformaciones
+├── sql/            # Esquema, transformaciones, EDA (eda/) y dataset de modelos (analysis/)
 ├── src/etl/        # Carga y orquestación del pipeline
+├── src/analysis/   # Dataset de modelado, regresiones y gráficos
 └── tests/fixtures/ # Datos de muestra para probar el pipeline
 ```
 
@@ -80,9 +81,25 @@ cp .env.example .env               # y completa tus credenciales
 python -m src.etl.pipeline --json data/raw/games.json --snapshot-date AAAA-MM-DD
 ```
 
-Para probar sin descargar nada, usa una base de datos aparte para no mezclar
-datos de prueba con los reales:
-`PGDATABASE=steam_indie_test python -m src.etl.pipeline --json tests/fixtures/sample_games.json --snapshot-date 2026-01-15`
+### Análisis
+
+- **Exploración en SQL:** `sql/eda/01` a `05`, una consulta a la vez (en pgAdmin, selecciónala y pulsa F5).
+- **Regresión:** abre `notebooks/01_regresion.ipynb` en VS Code con el kernel del `.venv`.
+  Las figuras se hacen con matplotlib (imágenes estáticas que GitHub muestra);
+  el dashboard usa Plotly para las gráficas interactivas.
+
+### Pruebas sin el dataset real
+
+Usa una base de datos aparte para no mezclar datos de prueba con los reales:
+
+```bash
+createdb steam_indie_test
+# Casos especiales de formato
+PGDATABASE=steam_indie_test python -m src.etl.pipeline --json tests/fixtures/sample_games.json --snapshot-date 2026-01-15
+# 6.000 juegos sintéticos con efectos conocidos, para validar los modelos
+python tests/generate_synthetic_games.py data/raw/synthetic.json --n 6000
+PGDATABASE=steam_indie_test python -m src.etl.pipeline --json data/raw/synthetic.json --snapshot-date 2026-11-13
+```
 
 ## Datos
 
@@ -95,7 +112,8 @@ datos de prueba con los reales:
 - [x] Estructura del repo y modelo de datos
 - [x] Carga del dataset base y transformación a modelo estrella
 - [ ] Enriquecimiento con Steam API y SteamSpy
-- [ ] Análisis exploratorio en SQL
-- [ ] Modelos de regresión (alcance y calidad)
+- [x] Análisis exploratorio en SQL
+- [x] Modelos de regresión (alcance y calidad)
+- [ ] Interpretación de los modelos con el snapshot real
 - [ ] Dashboard en Streamlit
 - [ ] Hallazgos y conclusiones

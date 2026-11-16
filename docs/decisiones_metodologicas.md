@@ -193,3 +193,88 @@ contenido, presupuesto y a veces publisher; (2) causalidad inversa: un juego que
 no vende tiende a bajar su precio, y aquí se usa el precio actual; (3) el índice
 supone que la proporción reseñas/ventas es igual en todos los tramos y que se vende
 a precio de lista, cuando buena parte de las ventas ocurre con descuento.
+
+## 12. Hallazgo: géneros y tags (asociación, sin controles)
+
+Indies 2016–2023. Línea base: ~22 % de todos los indies llega a 100 reseñas; ~25 %
+de los que tienen tags.
+
+**Géneros**
+- *Massively Multiplayer*: el mayor alcance (36,5 %) y la peor valoración (68 %).
+  Perfil de éxito comercial polémico.
+- *Simulation* y *RPG*: por encima del promedio (~28 %).
+- *Casual*: el género más común, la valoración más alta (83 %) y un alcance bajo
+  (17,8 %). Perfil de joya oculta.
+
+**Tags (5 más votados por juego, 200 o más juegos)**
+- Mayor alcance (índice ≥ 1,75): juegos sociales y sistémicos (Multiplayer,
+  Online Co-Op, Co-op, Base-Building, Management, Crafting, Open World, City
+  Builder, Deckbuilding, Turn-Based) y contenido adulto (Mature, Sexual Content,
+  Nudity).
+- Menor alcance (índice ≤ 0,66) pero la valoración más alta (88–95 %): arcade,
+  plataformas y lógica (2D Platformer, Precision Platformer, Arcade, Runner,
+  Match 3, Logic, Sokoban). Es el grupo de joyas ocultas más claro.
+
+**Tags de recepción vs. de diseño:** algunos tags los agregan los jugadores
+*después* de disfrutar el juego (Great Soundtrack, Memes). Son consecuencia del
+éxito, no causa, y se excluirán como predictores en la regresión.
+
+**Crecimiento de la oferta por nicho (consulta 5.3):** el indicador está sesgado
+para los tags de recepción, porque los juegos más antiguos han tenido más tiempo
+para recibirlos. Con tags de diseño:
+- Buen alcance y competencia nueva en baja: Turn-Based (índice 1,84,
+  crecimiento 0,53), Massively Multiplayer (1,75; 0,41), RPGMaker (1,21; 0,20).
+- Buen alcance y competencia nueva en alza: Horror (1,44; 1,33), Visual Novel
+  (1,40; 1,26), Co-op (2,05; 1,09), Mature (2,71; 1,13).
+
+## 13. Early Access: hallazgo con sesgo de supervivencia
+
+| | Indies | % que llega a 100 reseñas | Valoración mediana |
+|---|---|---|---|
+| Early Access | 5.067 | 16,9 % | 75 % |
+| Lanzamiento directo | 45.737 | 22,4 % | 82,8 % |
+
+El género *Early Access* refleja el estado al momento del snapshot. Si, como es
+probable, Steam lo retira cuando el juego sale de Early Access, los proyectos
+exitosos que completaron el desarrollo aparecen como lanzamiento directo, y el
+grupo Early Access queda formado por proyectos todavía en desarrollo años después
+(muchos, estancados o abandonados).
+
+**Conclusión válida:** los indies lanzados entre 2016 y 2023 que *siguen* en Early
+Access rinden peor y están peor valorados. **No** se puede concluir que lanzar en
+Early Access perjudique: para eso haría falta el historial de cada juego.
+
+## 14. Modelos de regresión (notebooks/01_regresion.ipynb)
+
+OLS con errores robustos HC3, indies 2016–2023 sin software, controlando el año de
+lanzamiento.
+
+| Modelo | Respuesta | Universo | Variables principales |
+|---|---|---|---|
+| 1 | log(reseñas + 1) | Todos | Precio, día, mes, autopublicado, ficha de la tienda, géneros |
+| 2 | log(reseñas + 1) | Con tags | Modelo 1 + 29 tags de diseño |
+| 3 | % positivo | 50 o más reseñas | Modelo 2 |
+
+**Decisiones**
+- Los tags solo entran en los modelos 2 y 3: existen solo para juegos con jugadores,
+  así que en el modelo 1 serían en parte consecuencia del alcance.
+- Solo **tags de diseño**; se excluyen los de recepción (Great Soundtrack, Memes...).
+- **Los efectos de los tags son conservadores.** Con datos sintéticos, un efecto
+  plantado de +0,8 se recuperó como +0,39: filtrar a juegos con tags recorta la
+  variable respuesta y reduce los efectos hacia cero.
+- **DLC, logros, idiomas, Mac y Linux** se usan solo como controles: describen el
+  estado actual y reflejan sobre todo causalidad inversa (los juegos exitosos
+  reciben DLC y traducciones).
+- **Prueba de robustez del mes:** el año está controlado, pero no la antigüedad
+  dentro del año. Con solo cohortes 2016–2021 la penalización de fin de año no
+  desaparece (noviembre −34 %, diciembre −32 % vs. enero): es estacionalidad.
+- **Validación:** el modelo 1 recuperó los efectos plantados en los datos
+  sintéticos (`tests/generate_synthetic_games.py`).
+
+**Resultados principales**
+- Precio vs. $5–9,99: $20–29,99 +525 %, $15–19,99 +220 %, $10–14,99 +70 %; menos de
+  $5, negativo. En calidad, solo menos de $2 es claramente peor (−3,9 pp).
+- Día vs. jueves: sábado −25 %, domingo −21 %, resto −8 % a −14 %.
+- Autopublicado: −35 % de alcance, +1,9 pp de calidad.
+- Géneros (alcance): Massively Multiplayer +127 %, Simulation +44 %, Casual −27 %.
+- Cuadrantes alcance vs. calidad: ver las conclusiones del notebook.
