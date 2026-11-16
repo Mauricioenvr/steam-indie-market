@@ -4,7 +4,8 @@ Análisis del mercado de videojuegos indie en Steam: tendencias de lanzamiento,
 saturación, géneros, etiquetas, precios y los factores que se asocian con el
 **alcance comercial** y con la **calidad percibida** de un juego.
 
-> Steam Games Dataset de FronkonGames, actualizado el 2026-11-13. Dashboard en Streamlit en desarrollo.
+> Steam Games Dataset de FronkonGames, actualizado el 2026-11-13.
+> **Dashboard interactivo:** _(enlace pendiente de publicación)_
 
 ## Preguntas de investigación
 
@@ -73,6 +74,7 @@ pendiente.
 | Almacenamiento y modelado | PostgreSQL: staging en JSONB y modelo estrella |
 | Análisis | SQL (CTEs, funciones de ventana), pandas, statsmodels, scipy |
 | Visualización | matplotlib (notebooks), Streamlit + Plotly (dashboard) |
+| Publicación | Streamlit Community Cloud (extracto en Parquet) |
 
 ## Modelo de datos
 
@@ -96,8 +98,8 @@ las actualizaciones de la API conviven y permiten ver la evolución en el tiempo
 ## Estructura
 
 ```
-├── app/            # Dashboard en Streamlit
-├── data/           # raw/ y processed/ (no se versionan)
+├── app/            # Dashboard en Streamlit (lee data/dashboard/)
+├── data/           # raw/ y processed/ (no se versionan); dashboard/ (extracto publicado)
 ├── docs/           # Decisiones metodológicas e imágenes del README (img/)
 ├── notebooks/      # Exploración y modelos
 ├── sql/            # Esquema, transformaciones, EDA (eda/) y dataset de modelos (analysis/)
@@ -132,6 +134,20 @@ python -m src.etl.pipeline --json data/raw/games.json --snapshot-date AAAA-MM-DD
   el dashboard usa Plotly para las gráficas interactivas.
 - **Figuras del README:** `python -m src.analysis.readme_figures` las regenera en `docs/img/`.
 
+### Dashboard
+
+El dashboard publicado no tiene acceso a PostgreSQL: lee un extracto en Parquet
+(`data/dashboard/`, unos pocos MB) que se versiona en el repo.
+
+```bash
+python -m src.etl.export_dashboard   # regenera el extracto desde la base
+streamlit run app/app.py             # abre el dashboard en el navegador
+```
+
+Secciones: **Panorama del mercado** (saturación y concentración), **Explorador de
+nichos** (tags, géneros, precio y años frente a la línea base) y **Precio y momento**
+(tramos de precio, día y mes de lanzamiento).
+
 ### Pruebas sin el dataset real
 
 Usa una base de datos aparte para no mezclar datos de prueba con los reales:
@@ -158,5 +174,5 @@ PGDATABASE=steam_indie_test python -m src.etl.pipeline --json data/raw/synthetic
 - [x] Análisis exploratorio en SQL
 - [x] Modelos de regresión (alcance y calidad)
 - [x] Hallazgos y conclusiones
-- [ ] Dashboard en Streamlit
+- [x] Dashboard en Streamlit
 - [ ] Enriquecimiento con Steam API y SteamSpy (demos y nuevos snapshots)

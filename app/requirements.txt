@@ -1,0 +1,5 @@
+# Dependencias mínimas del dashboard (Streamlit Community Cloud usa este archivo)
+streamlit>=1.50
+pandas>=2.2
+plotly>=5.24
+pyarrow>=16
