@@ -5,8 +5,7 @@ saturación, géneros, etiquetas, precios y los factores que se asocian con el
 **alcance comercial** y con la **calidad percibida** de un juego.
 
 > Steam Games Dataset de FronkonGames, actualizado el 2026-11-13.
-> **Dashboard interactivo:** _(enlace pendiente de publicación)_
-
+> **Dashboard interactivo:** https://dashboardinteractivoindiegames.streamlit.app/
 ## Preguntas de investigación
 
 1. ¿Cómo han evolucionado el volumen de lanzamientos indie y la saturación del mercado?
