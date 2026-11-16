@@ -4,7 +4,7 @@ Análisis del mercado de videojuegos indie en Steam: tendencias de lanzamiento,
 saturación, géneros, etiquetas, precios y los factores que se asocian con el
 **alcance comercial** y con la **calidad percibida** de un juego.
 
-> Análisis completo (snapshot del 13-11-2026). Dashboard en Streamlit en desarrollo.
+> Steam Games Dataset de FronkonGames, actualizado el 2026-11-13. Dashboard en Streamlit en desarrollo.
 
 ## Preguntas de investigación
 
