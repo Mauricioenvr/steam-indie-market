@@ -1,0 +1,174 @@
+{
+  "900000001": {
+    "name": "Fox Lantern",
+    "release_date": {
+      "coming_soon": false,
+      "date": "Oct 21, 2019"
+    },
+    "required_age": 0,
+    "is_free": false,
+    "price": 14.99,
+    "supported_languages": [
+      "English",
+      "Spanish - Latin America"
+    ],
+    "website": "https://example.com",
+    "windows": true,
+    "mac": true,
+    "linux": false,
+    "metacritic_score": 0,
+    "achievements": 24,
+    "recommendations": 1200,
+    "developers": [
+      "Small Studio"
+    ],
+    "publishers": [
+      "Small Studio"
+    ],
+    "categories": [
+      "Single-player",
+      "Steam Achievements"
+    ],
+    "genres": [
+      "Adventure",
+      "Indie"
+    ],
+    "screenshots": [
+      "a",
+      "b",
+      "c"
+    ],
+    "movies": [
+      "m"
+    ],
+    "positive": 1900,
+    "negative": 100,
+    "estimated_owners": "50000 - 100000",
+    "average_playtime_forever": 320,
+    "median_playtime_forever": 280,
+    "peak_ccu": 35,
+    "tags": {
+      "Indie": 210,
+      "Adventure": 180,
+      "Atmospheric": 150,
+      "Puzzle": 90
+    }
+  },
+  "900000002": {
+    "name": "Free Brawler",
+    "release_date": "3 Mar, 2021",
+    "required_age": 18,
+    "is_free": true,
+    "price": 0,
+    "supported_languages": "English, French, German",
+    "website": "",
+    "windows": true,
+    "mac": false,
+    "linux": false,
+    "metacritic_score": 72,
+    "achievements": 0,
+    "recommendations": 0,
+    "developers": [
+      "Big Co"
+    ],
+    "publishers": [
+      "Big Co",
+      "Mega Pub"
+    ],
+    "categories": [
+      "Multi-player"
+    ],
+    "genres": [
+      "Action",
+      "Free To Play"
+    ],
+    "screenshots": [],
+    "movies": [],
+    "positive": 45000,
+    "negative": 55000,
+    "estimated_owners": "2000000 - 5000000",
+    "average_playtime_forever": 900,
+    "median_playtime_forever": 120,
+    "peak_ccu": 8000,
+    "tags": {
+      "Free to Play": 500,
+      "Action": 400,
+      "Indie": 12
+    }
+  },
+  "900000003": {
+    "name": "Unreleased Thing",
+    "release_date": {
+      "coming_soon": true,
+      "date": "Coming soon"
+    },
+    "required_age": 0,
+    "is_free": false,
+    "price": 0,
+    "supported_languages": [],
+    "windows": true,
+    "mac": false,
+    "linux": true,
+    "metacritic_score": 0,
+    "achievements": 0,
+    "recommendations": 0,
+    "developers": [],
+    "publishers": [],
+    "categories": [],
+    "genres": [
+      "Indie",
+      "Early Access"
+    ],
+    "screenshots": [],
+    "movies": [],
+    "positive": 0,
+    "negative": 0,
+    "estimated_owners": "0 - 0",
+    "average_playtime_forever": 0,
+    "median_playtime_forever": 0,
+    "peak_ccu": 0,
+    "tags": []
+  },
+  "900000004": {
+    "name": "Month Only",
+    "release_date": "Oct 2008",
+    "required_age": 0,
+    "is_free": false,
+    "price": 4.99,
+    "supported_languages": [
+      "English"
+    ],
+    "windows": true,
+    "mac": false,
+    "linux": false,
+    "metacritic_score": 0,
+    "achievements": 0,
+    "recommendations": 0,
+    "developers": [
+      "Small Studio"
+    ],
+    "publishers": [
+      "Small Studio"
+    ],
+    "categories": [
+      "Single-player"
+    ],
+    "genres": [
+      "Casual",
+      "Indie"
+    ],
+    "screenshots": [
+      "x"
+    ],
+    "movies": [],
+    "positive": 3,
+    "negative": 0,
+    "estimated_owners": "0 - 20000",
+    "average_playtime_forever": 0,
+    "median_playtime_forever": 0,
+    "peak_ccu": 0,
+    "tags": {
+      "Casual": 5
+    }
+  }
+}
