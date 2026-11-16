@@ -4,7 +4,7 @@ Análisis del mercado de videojuegos indie en Steam: tendencias de lanzamiento,
 saturación, géneros, etiquetas, precios y los factores que se asocian con el
 **alcance comercial** y con la **calidad percibida** de un juego.
 
-> 🚧 Proyecto en desarrollo.
+> Análisis completo (snapshot del 13-11-2026). Dashboard en Streamlit en desarrollo.
 
 ## Preguntas de investigación
 
@@ -16,11 +16,54 @@ saturación, géneros, etiquetas, precios y los factores que se asocian con el
 
 ## Enfoque
 
-El éxito se mide en **dos dimensiones separadas**: volumen de reseñas (alcance) y
-porcentaje de reseñas positivas ajustado por confianza (calidad). Cruzarlas da
-cuatro perfiles: *éxito pleno*, *éxito comercial polémico*, *joya oculta* y *fracaso*.
-Los resultados son asociaciones, no relaciones causales.
+El éxito se mide en **dos dimensiones separadas**: volumen de reseñas (alcance, un
+proxy de ventas) y porcentaje de reseñas positivas (calidad percibida, en juegos con
+50 o más reseñas). Cruzarlas da cuatro perfiles: *alcance y calidad altos*, *éxito
+comercial polémico*, *joya oculta* y *alcance y calidad bajos*.
+
+Universo: indies publicados en Steam (sin software), con foco en las cohortes
+2016–2023. Los resultados son **asociaciones, no relaciones causales**.
 Detalles en [`docs/decisiones_metodologicas.md`](docs/decisiones_metodologicas.md).
+
+## Hallazgos principales
+
+### 1. Más juegos, los mismos lugares de éxito
+
+![Lanzamientos indie por año vs. juegos que llegan a 100 reseñas](docs/img/pastel_fijo.png)
+
+Entre 2016 y 2024 los lanzamientos indie se multiplicaron por **4,2**, pero la cantidad
+de juegos que llegan a 100 reseñas se mantuvo en **~1.200–1.600 por año**. La
+probabilidad de llegar bajó del **47,5 % al 12,5 %**, y el **1 %** de los indies
+concentra el **75 %** de todas las reseñas.
+
+### 2. Alcance y calidad responden a factores casi opuestos
+
+![Efecto de géneros y tags en alcance y en calidad percibida](docs/img/alcance_vs_calidad.png)
+
+- **Éxito comercial polémico:** juegos sistémicos y de larga duración (Massively
+  Multiplayer, Survival, Management, Simulation, Mature) atraen mucho público, pero se
+  valoran peor.
+- **Joya oculta:** juegos compactos y precisos (2D Platformer, Arcade, Local Co-Op,
+  Casual) y los autopublicados se valoran mejor, pero llegan a menos jugadores.
+- **Alcance y calidad a la vez:** juegos narrativos y de estilo definido (Visual Novel,
+  Story Rich, Choices Matter, Pixel Graphics, Anime, Female Protagonist).
+
+### 3. Precio y momento de lanzamiento (modelos con controles)
+
+- **Precio:** frente a $5–9,99, los indies de $20–29,99 tienen ~6 veces más reseñas. A
+  partir de $5 la valoración no cambia; por debajo de $2 cae en ambas dimensiones.
+- **Día:** el jueves es el mejor día; sábado (−25 %) y domingo (−21 %) rinden peor
+  aunque se controle si el juego tiene publisher.
+- **Mes:** enero es el mejor mes; noviembre y diciembre, ~30 % menos. Una prueba de
+  robustez con cohortes antiguas confirma que es estacionalidad, no antigüedad.
+- **Publisher:** los autopublicados tienen 35 % menos reseñas, pero +1,9 pp de valoración.
+
+Análisis completo en [`notebooks/01_regresion.ipynb`](notebooks/01_regresion.ipynb).
+
+**Límites:** las reseñas son un proxy de ventas; precio, DLC e idiomas reflejan el
+estado actual de la tienda, no el del lanzamiento; la etiqueta "indie" es
+autodeclarada; el dataset no incluye demos, así que esa parte de la pregunta 4 queda
+pendiente.
 
 ## Stack
 
@@ -55,7 +98,7 @@ las actualizaciones de la API conviven y permiten ver la evolución en el tiempo
 ```
 ├── app/            # Dashboard en Streamlit
 ├── data/           # raw/ y processed/ (no se versionan)
-├── docs/           # Decisiones metodológicas
+├── docs/           # Decisiones metodológicas e imágenes del README (img/)
 ├── notebooks/      # Exploración y modelos
 ├── sql/            # Esquema, transformaciones, EDA (eda/) y dataset de modelos (analysis/)
 ├── src/etl/        # Carga y orquestación del pipeline
@@ -87,6 +130,7 @@ python -m src.etl.pipeline --json data/raw/games.json --snapshot-date AAAA-MM-DD
 - **Regresión:** abre `notebooks/01_regresion.ipynb` en VS Code con el kernel del `.venv`.
   Las figuras se hacen con matplotlib (imágenes estáticas que GitHub muestra);
   el dashboard usa Plotly para las gráficas interactivas.
+- **Figuras del README:** `python -m src.analysis.readme_figures` las regenera en `docs/img/`.
 
 ### Pruebas sin el dataset real
 
@@ -111,9 +155,8 @@ PGDATABASE=steam_indie_test python -m src.etl.pipeline --json data/raw/synthetic
 
 - [x] Estructura del repo y modelo de datos
 - [x] Carga del dataset base y transformación a modelo estrella
-- [ ] Enriquecimiento con Steam API y SteamSpy
 - [x] Análisis exploratorio en SQL
 - [x] Modelos de regresión (alcance y calidad)
-- [ ] Interpretación de los modelos con el snapshot real
+- [x] Hallazgos y conclusiones
 - [ ] Dashboard en Streamlit
-- [ ] Hallazgos y conclusiones
+- [ ] Enriquecimiento con Steam API y SteamSpy (demos y nuevos snapshots)
